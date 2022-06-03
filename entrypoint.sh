@@ -41,6 +41,9 @@ if [ -f "/.do_deploy_jasperserver" ]; then
     sed -i 's/queryLanguagesPro/queryLanguagesCe/g' /usr/local/tomcat/webapps/ROOT/WEB-INF/applicationContext-WebServiceDataSource.xml && \
     rm -rf /tmp/*
 
+    # https://community.jaspersoft.com/questions/822153/error-closing-context
+    echo "tbeller.usejndi=false" > /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/resfactory.properties
+
     # import any export zip files from another JasperServer
 
     shopt -s nullglob # handle case if no zip files found

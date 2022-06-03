@@ -1,47 +1,32 @@
 version: '3'
-
 services:
-
-  mysql:
-    image: mysql:5.7
-    container_name: mysql_jasperserver
+  postgres:
+    image: postgres:14-alpine
     # Uncomment if you want access to DB access from Host
     # ports:
-    #   - "3306:3306"
+    #   - "5432:5432"
     environment:
-      - MYSQL_ROOT_PASSWORD=mysql
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=jasper
     volumes:
-      - ./datadir:/var/lib/mysql
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 3
-        window: 120s
+      - pg_data:/var/lib/postgresql/data
 
   jasperserver:
-    image: retriever/jasperserver:7.5.0
-    container_name: jasperserver
+    image: tobe81cwb/jasperserver:8.0.2
     ports:
       - "8080:8080"
     environment:
-      - DB_TYPE=mysql
-      - DB_HOST=mysql_jasperserver
-      - DB_PORT=3306
-      - DB_USER=root
-      - DB_PASSWORD=mysql
+      - DB_TYPE=postgresql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=secret
     volumes:
       # Relative path on the host/volume on container
-      - ./jasperserver-import:/jasperserver-import
+      - /jasperserver-import:/jasperserver-import
     depends_on:
-      - mysql
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 3
-        window: 120s
+      - postgres
+
+volumes:
+  pg_data:
